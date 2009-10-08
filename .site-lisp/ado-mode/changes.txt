@@ -1,0 +1,72 @@
+Version History:
+---------------
+
+0.91.2: Added Mata functions introduces in the 20jan2006 update to Stata,
+  and added the ado-hacks.el file, which includes a function defined in
+  Stata 22, but not earlier: line-number-at-pos. This handy function is
+  good for complicated indentations and for jumping back to the beginning
+  of commands... but missing it will break emacs 21.whatever.
+
+0.91.1: Separated change history off.
+. changed format of new history entries
+. changed all my addresses to my new job forgot this in 0.91.0.
+. changed behavior for saving files to be more emacs-like.
+.. When saving a file under its old name, there is no confirmation, like usual
+   emacs saving
+.. if ado-mode, ahem, corrects the file name *and* there is a saved file of that
+   name in the default directory already, it *will* prompt, to avoid mistaken
+   overwrites. 
+.. thanks to Brendan Halpin for pointing this out
+. fixed some minor programming badness, such as using insert-file when
+  insert-file-contents was the proper command to use.
+. fixed and improved indentation, so that continued commands with embedded
+  comments are indented properly.
+. fixed bugs in indentation when using a semi-colon for the delimiter
+. changed method for comment indentation, so that /* and */ on different
+  lines will line up, with the text on in-between lines indented to one
+  extra level of indentation. (requested by Patrick Ball) 
+. Mata changes
+.. added new faces for current mata keywords, future mata keywords, and
+   mata functions (though the mata function face defaults to the regular
+   function face.
+.. included all the mata functions, as far as I can tell.
+.. did not change anything else with indentation for Mata functions.
+
+0.91.0: Fixed highlighting to work with all new Stata commands
+  except the new Mata commands. They will arrive in another update.
+  No real changes to the underpinnings.
+
+0.82.5: Fixed numerous problems with indenting and moving to
+  the beginning and end of commands when using semi-colons as
+  the delimiter. Bound M-e to ado-end-of-command. Fixed the
+  behavior of this and ado-beginning-of-command. 
+
+0.82.4: Hacked the highlighting to make embedded strings, a la
+  `"this is "embedded", you know"'
+  look right. Emacs won't treat them properly internally, but
+  at least they will look like strings.
+
+0.82.3: Added the new commands related to time series from the July 23,
+  2004 update of Stata. Made the now obsolete -varfcast- and -varinf- show
+  up as obsolete.
+
+0.82.2: Fixed the bug where ado-mode got confused by opening .do files
+  which had subprogram defined in them.
+
+0.82.1: Added the new commands, macro extended commands and new SMCL
+  directives from the July 1, 2004 update of Stata. Minor stuff.
+
+0.82: Changed behavior when -do- files are saved to fix the bug that would cause 
+  -do- files which defined programs to get saved as -ado- files named after the 
+  first locally defined program. Other bug fixes for highlighting of some
+  lesser-used constructions.
+
+0.81: Changed behavior of open and close quotes (` and ') so that they no longer
+  behave like parentheses, meaning that they don't flash and don't affect indentation.
+  This should have been done earlier when ' was allowed for matrix transposition.
+
+0.80: Serious upgrade: made to work with Stata 8, customization groups added,
+  font-locking made more flexible, buffer-local changes to indentation and
+  the like added.
+
+<0.80: Updates for Stata changes - out-of-date emacs code.

@@ -1,0 +1,6 @@
+A list of things to forget
+=========================
+
+. add the xclass preserve and other options to the program define?
+NO. There are too many options, now, and ado-mode doesn't do options,
+because of their lack of ordering

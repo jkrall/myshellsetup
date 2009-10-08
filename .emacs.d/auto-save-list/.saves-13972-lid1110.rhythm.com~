@@ -1,0 +1,16 @@
+/muse/krall/Houdini/VEX/cloudtank/src/dsmLight.C
+/muse/krall/Houdini/VEX/cloudtank/src/#dsmLight.C#
+/muse/krall/Houdini/VEX/cloudtank/src/IFD_CloudTankPassThru.C
+/muse/krall/Houdini/VEX/cloudtank/src/#IFD_CloudTankPassThru.C#
+/muse/krall/Houdini/VEX/cloudtank/src/ROP_CloudTank.C
+/muse/krall/Houdini/VEX/cloudtank/src/#ROP_CloudTank.C#
+/muse/krall/Houdini/VEX/cloudtank/h/dsmHelper.h
+/muse/krall/Houdini/VEX/cloudtank/h/#dsmHelper.h#
+/software/thalia/h/dsmFile.h
+/software/thalia/h/#dsmFile.h#
+/muse/krall/Houdini/VEX/cloudtank/h/dsmLight.h
+/muse/krall/Houdini/VEX/cloudtank/h/#dsmLight.h#
+/muse/krall/Houdini/VEX/cloudtank/src/cloudTankRay.C
+/muse/krall/Houdini/VEX/cloudtank/src/#cloudTankRay.C#
+/muse/krall/Houdini/Makefile
+/muse/krall/Houdini/#Makefile#

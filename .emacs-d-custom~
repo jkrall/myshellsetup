@@ -1,0 +1,688 @@
+;; -*- Mode: Emacs-Lisp -*-
+;; -*- lisp -*-
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; BUFFER SWITCHING FIX
+;;
+;; This changes the behaviour of the switch-to-buffer completion functions so
+;; that the current buffer is NOT in the completion list.
+;;
+;; i.e. say you're working in "temp.c", and you want to visit "temp.h"; so you
+;; type "C-xb", then "t<TAB>" which then presents you with a completion list of
+;; temp.c and temp.h, so you then must type "h<RET>".  This is annoying since 
+;; why would you want to switch back to the buffer you're in?!?
+;; Using this fix would remove "temp.c" from the completion lits so that when 
+;; you had typed "t<TAB>" the name would be completed as "temp.h" as desired.
+;;
+;; Steve Dodd 
+;; March 1998
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun s-minibuffer-complete ()
+  "A shell around minibuffer-complete which removes the name of the current buffer from the buffer completion list.  The default behaviour doesn't make sense since there is no reason to ask to switch to the buffer you are already in!"
+  (interactive)
+  (if s-remove-first-completion
+      (progn (setq s-remove-first-completion nil)
+	     (if (consp minibuffer-completion-table)
+		 (setq  minibuffer-completion-table 
+			(cdr minibuffer-completion-table)) ()))
+    ())
+  (minibuffer-complete))
+
+(defun s-minibuffer-complete-word ()
+  "A shell around minibuffer-complete-word which removes the name of the current buffer from the buffer completion list.  The default behaviour doesn't make sense since there is no reason to ask to switch to the buffer you are already in!"
+  (interactive)
+  (if s-remove-first-completion
+      (progn (setq s-remove-first-completion nil)
+	     (if (consp minibuffer-completion-table)
+		 (setq  minibuffer-completion-table 
+			(cdr minibuffer-completion-table)) ()))
+    ())
+  (minibuffer-complete-word)
+)
+
+(defun s-minibuffer-complete-and-exit ()
+  "A shell around minibuffer-complete-and-exit which removes the name of the current buffer from the buffer completion list.  The default behaviour doesn't make sense since there is no reason to ask to switch to the buffer you are already in!"
+  (interactive)
+  (if s-remove-first-completion
+      (progn (setq s-remove-first-completion nil)
+	     (if (consp minibuffer-completion-table)
+		 (setq  minibuffer-completion-table 
+			(cdr minibuffer-completion-table)) ()))
+    ())
+  (minibuffer-complete-and-exit))
+
+
+(defun s-switch-to-buffer ()
+  "A shell around switch-to-buffer which removes the name of the current buffer from the buffer completion list.  The default behaviour doesn't make sense since there is no reason to ask to switch to the buffer you are already in!"
+  (interactive)
+  (setq s-remove-first-completion 't)
+  (switch-to-buffer (read-buffer "Switch to buffer: " (other-buffer))))
+
+(setq s-remove-first-completion 'nil)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; END OF BUFFER SWITCHING FIX
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; ;; Ask for mwheel support or not?
+(defvar ask-for-mwheel nil)
+(defvar do-require-mwheel t)
+
+;; We want a read stamp
+(add-hook 'gnus-select-group-hook 'gnus-group-set-timestamp)
+(add-hook 'gnus-group-mode-hook 'gnus-topic-mode)
+
+;; Thanks to Kim F. Storm for the CUA mode package, url:
+;; http://hjem.get2net.dk/storm/emacs/
+;(if option-package-load-CUA
+;    (option-load-package option-package-CUA))
+
+; (require 'ido)
+; (ido-mode)
+
+(mapcar (lambda (x)
+	  (let* ((item (eval x))
+		 (load (eval (cadr (cdr item)))))
+	    (if load
+		(option-load-package item))))
+	option-package-available-alist)
+
+; ;; Show blanks(spaces and tabs) black-mode-on to use it
+; (if option-package-load-blank-mode
+;     (option-load-package option-package-blank-mode))
+
+; ;; Show a blinking cursor
+; (if option-package-load-blinking-cursor
+;     (option-load-package option-package-blinking-cursor))
+
+; ;; Display a list of recently opened files, Author: David Ponce
+; (if option-package-load-recentf
+;     (option-load-package option-package-recentf))
+
+; ;; Enable rectangle selection with highlighting, Author: Rick Sladkey
+; (if option-package-load-rect-mark
+;     (option-load-package option-package-rect-mark))
+
+; ;; Enable revive mode, allows for saving editing status and window properties, Author: HIROSE Yuuji
+; (if option-package-load-revive
+;     (option-load-package option-package-revive))
+
+; ;; Enable history saving, Author: Lars R. Clausen
+; (if option-package-load-save-history
+;     (option-load-package option-package-save-history))
+; ;     (if (option-load-package option-package-save-history)
+; ; 	(setq option-save-history-flag t)
+; ;       (setq option-save-history-flag nil)))
+
+; (if option-package-load-mwheel
+;     (option-load-package option-package-mwheel))
+
+; (if option-package-load-jde
+;     (option-load-package option-package-jde))
+
+; (if option-package-load-speedbar
+;     (option-load-package option-package-speedbar))
+
+
+;; Enable advanced scrolling, Author: Eric Eide
+(if (emacs-type-is-regular)
+    (require 'scroll-in-place nil t)
+  (require 'scroll-in-place))
+
+(defun scroll-down-one-line (arg)
+  "Scroll down one line, or number of lines specified by prefix arg."
+  (interactive "P")
+  (let ((old-scroll-lines scroll-default-lines)
+	(scroll-default-lines 1))
+    (scroll-down-in-place arg)
+    (setq scroll-default-lines old-scroll-lines)))
+
+(defun scroll-up-one-line (arg)
+  "Scroll down one line, or number of lines specified by prefix arg."
+  (interactive "P")
+  (let ((old-scroll-lines scroll-default-lines)
+	(scroll-default-lines 1))
+    (scroll-up-in-place arg)
+    (setq scroll-default-lines old-scroll-lines)))
+
+;; We want tmake mode activated
+(if (emacs-type-is-regular)
+    (require 'tmake-mode nil t)
+  (require 'tmake-mode))
+
+; Enables completion of recently used words
+; Meta Return cycles trough completions
+; (if (require 'completion nil t)
+;     (initialize-completions))
+
+; ;; Enable auto revert
+; (if (require 'autorevert nil t)
+;     (global-auto-revert-mode 1))
+
+; ;; Turn on current line highligting
+; (if (require 'highlight-current-line nil t)
+;     (highlight-current-line-on t))
+
+(setq completion-ignored-extensions;; Filename completion ignores these.
+      (append completion-ignored-extensions 
+	      '(".CKP" ".u" ".press" ".imp" ".BAK")))
+
+;; Set the font if variable is set
+(if default-font-name
+    (set-default-font default-font-name))
+
+; Charset stuff
+(standard-display-european t)
+(set-input-mode (car (current-input-mode))
+		(nth 1 (current-input-mode))
+		0)
+
+(setq widget-push-button-gui t)
+
+(setq resize-minibuffer-mode t)
+
+(setq resize-minibuffer-window-max-height 3)
+
+(setq widget-editable-list-gui t)
+
+;; Set file for customization save.
+(setq custom-file "~/.emacs.gnu.custom")
+
+;; We dont't want a startup message
+(setq-default inhibit-startup-message t)
+
+;; Paste at point NOT at cursor
+(setq mouse-yank-at-point 't)
+
+;; Scroll Bar gets dragged by mouse butn 1
+(global-set-key [vertical-scroll-bar down-mouse-1] 'scroll-bar-drag)
+
+;; Don't know what the Xemacs equivelant is, do you?
+(if (emacs-type-is-regular)
+    (progn
+     (set-language-environment "Latin-1")
+     (set-terminal-coding-system 'iso-latin-1)
+     (setq unibyte-display-via-language-environment t)))
+
+;; Set web browser to use
+(setq browse-url-generic-program "konqueror") ;; Konqueror
+; (setq browse-url-browser-function 'browse-url-generic)
+; (setq browse-url-browser-function 'browse-url-lynx-emacs)
+(setq browse-url-browser-function 'browse-url-w3) ;; Use internal W3 instead
+
+;; We want compression support, entering tgz files etc.. :)
+(auto-compression-mode t)
+
+;; Makes things a little bit more consistent.
+(fset 'yes-or-no-p 'y-or-n-p)
+
+; Don't ask whenever downcase-region is asked for.
+(put 'downcase-region 'disabled nil)
+
+;; Set some vars
+(custom-set-variables
+ ;; Kill the whole line when using C-k
+ '(kill-whole-line t)
+ ;; Compilation: Set new window height, never ask for compile command, save all files and sets new compile command.
+ '(compilation-window-height 10)
+ '(compilation-read-command t)
+ '(compilation-ask-about-save nil)
+ '(compile-command "make")
+ ;; Open man pages in current window in full screen
+ '(Man-notify-method (quote bully))
+ '(scroll-bar-mode nil)
+ ;; Extra types for the C++ mode, all Qt classes and some extra ones. Note, too many makes it very slow to fontify buffers
+ '(c++-font-lock-extra-types (quote ("JBF[a-zA-Z0-9]*" "eZ[a-zA-Z0-9]*" "Q[a-zA-Z]*" "uint" "ulong" "string"))))
+
+;;Enable opposite bracket/paranthesis highlighting
+(require 'paren)
+(if (emacs-type-is-regular)
+    (show-paren-mode t))
+(setq blink-matching-paren-on-screen t)
+
+;; Maximum decoration for all modes
+(setq-default font-lock-maximum-decoration t)
+
+;; Enable font lock (colours) for all modes that support it:
+(if (emacs-type-is-regular)
+    (global-font-lock-mode t))
+
+;---------------------------------------------------------------------
+; Font-lock, faces, etc.
+;
+; Note that `font-lock-use-default-*' must come before `font-lock'.
+
+; We're not to use the default colors
+(setq font-lock-use-default-fonts nil)
+(setq font-lock-use-default-colors nil)
+
+(require 'font-lock)
+
+;; Start scrolling when 2 lines from top/bottom
+(setq scroll-margin 2)
+;; Or set it to 0 to get really smooth scrolling
+(setq scroll-margin 0)
+(setq hscroll-step 1)
+
+;; Scroll one vertical line, 0 means center.
+(setq scroll-step 1)
+
+;Show current line and column in the status field.
+(setq line-number-mode t)
+(setq column-number-mode t)
+(setq display-time-day-and-date t)
+(display-time)
+
+;; Turn on MS-Dos selection/copy/paste mode, shift/ctrl + insert/delete
+(if (emacs-type-is-regular)
+    (pc-selection-mode))
+
+; XEmacs:
+; Remove scroll bar.
+; Show buffer name in title bar
+
+(cond (window-system
+       (progn
+	 (if (emacs-type-is-regular)
+	     (scroll-bar-mode -1)))
+       (setq frame-title-format '("emacs: %b - %f"))))
+
+;; Turn on time stamping
+(setq time-stamp-active t)
+;; Sets new format for the time stamp, also used with the creation tag.
+(setq time-stamp-format "%02d-%3b-%:y %02H:%02M:%02S %u")
+
+;; We don't want to insert newlines when reaching end of buffer
+;; and we want to kill the whole line when doing a Ctrl-k
+(setq next-line-add-newlines nil
+      kill-whole-line t)
+
+;; auto insert customization
+(setq auto-insert-directory (project-select-autoinsert))
+;; We don't want to be asked about autoinsert
+(setq auto-insert-query nil)
+;; Set the autoinsert list
+(setq auto-insert-alist (project-create-autoinsert-alist))
+
+(defconst my-c-style
+  ;; Always indent c/c++ sources, never insert tabs
+  '((c-tab-always-indent        . t)
+    ;; Offset for line only comments
+    (c-basic-offset . 4)
+    (c-comment-only-line-offset . 0)
+    ;; Controls the insertion of newlines before and after braces.
+    (c-hanging-braces-alist     . ((substatement-open after)
+				   (brace-list-open)))
+    ;; Controls the insertion of newlines before and after certain colons.
+    (c-hanging-colons-alist     . ((member-init-intro before)
+				   (inher-intro)
+				   (case-label after)
+				   (label after)
+				   (access-label after)))
+    ;; List of various C/C++/ObjC constructs to "clean up".
+    (c-cleanup-list             . (scope-operator
+				   empty-defun-braces
+				   defun-close-semi))
+    ;; Association list of syntactic element symbols and indentation offsets.
+    (c-offsets-alist            . ((arglist-close . c-lineup-arglist)
+				   (substatement-open . 0)
+				   (case-label        . +)
+				   (block-open        . 0)
+				   (access-label      . -)
+				   (label	      . 0)
+				   (knr-argdecl-intro . -)))
+					;	(c-echo-syntactic-information-p . t)
+    )
+  "My C/C++ Programming Style")
+
+(defconst ezsystems-c-style
+  ;; Always indent c/c++ sources, never insert tabs
+  '((c-tab-always-indent        . t)
+    (c-basic-offset . 4)
+    ;; Offset for line only comments
+    (c-comment-only-line-offset . 0)
+    ;; Controls the insertion of newlines before and after braces.
+    (c-hanging-braces-alist     . ((substatement-open after)
+				   (brace-list-open)))
+    ;; Controls the insertion of newlines before and after certain colons.
+    (c-hanging-colons-alist     . ((member-init-intro before)
+				   (inher-intro)
+				   (case-label after)
+				   (label after)
+				   (access-label after)))
+    ;; List of various C/C++/ObjC constructs to "clean up".
+    (c-cleanup-list             . (scope-operator
+				   empty-defun-braces
+				   defun-close-semi))
+    ;; Association list of syntactic element symbols and indentation offsets.
+    (c-offsets-alist            . (
+				   (arglist-close . c-lineup-arglist)
+				   (substatement-open . 0)
+				   (case-label        . +)
+				   (block-open        . 0)
+				   (access-label      . -)
+				   (label	      . 0)
+				   (knr-argdecl-intro . -)))
+					;	(c-echo-syntactic-information-p . t)
+    )
+  "eZ systems Programming Style")
+
+
+;; PHP related stuff
+
+(require 'php-mode)
+
+(defconst ezsystems-php-style
+  ;; Always indent c/c++ sources, never insert tabs
+  '((c-tab-always-indent        . t)
+    (c-basic-offset . 4)
+    ;; Offset for line only comments
+    (c-comment-only-line-offset . 0)
+    ;; Controls the insertion of newlines before and after braces.
+    (c-hanging-braces-alist     . ((substatement-open after)
+				   (brace-list-open)))
+    ;; Controls the insertion of newlines before and after certain colons.
+    (c-hanging-colons-alist     . ((member-init-intro before)
+				   (inher-intro)
+				   (case-label after)
+				   (label after)
+				   (access-label after)))
+    ;; List of various C/C++/ObjC constructs to "clean up".
+    (c-cleanup-list             . (scope-operator
+				   empty-defun-braces
+				   defun-close-semi))
+    ;; Association list of syntactic element symbols and indentation offsets.
+    (c-offsets-alist            . (
+				   (arglist-close . c-lineup-arglist)
+				   (substatement-open . 0)
+				   (case-label        . +)
+				   (block-open        . 0)
+				   (access-label      . -)
+				   (label	      . 0)
+				   (knr-argdecl-intro . -)
+				   (inline-open . 0)))
+					;	(c-echo-syntactic-information-p . t)
+    )
+  "eZ systems PHP Programming Style")
+
+;; add my personal style.
+(c-add-style "personal" my-c-style)
+;; (c-add-style "eZSystems" ezsystems-c-style)
+(c-add-style "eZPHP" ezsystems-php-style)
+
+(defun my-c-mode-common-hook()
+  (interactive)
+  ;; offset customizations not in my-c-style
+  (c-set-offset 'member-init-intro '++)
+  ;; Regular expression for the outline mode.
+  ;; Enable outline mode with M-x outline-minor-mode
+  (setq outline-regexp (concat
+			"^"		; beginning of line is required
+			"\\(template[ \t]*<[^>]+>[ \t]*\\)?" ; there may be a "template <...>"
+			"\\([a-zA-Z0-9_:]+[ \t]+\\)?" ; type specs; there can be no
+			"\\([a-zA-Z0-9_:]+[ \t]+\\)?" ; more than 3 tokens, right?
+
+			"\\("		; last type spec including */&
+			"[a-zA-Z0-9_:]+"
+			"\\([ \t]*[*&]+[ \t]*\\|[ \t]+\\)" ; either pointer/ref sign or whitespace
+			"\\)?"		; if there is a last type spec
+			"\\("		; name; take that into the imenu entry
+			"[a-zA-Z0-9_:~]+" ; member function, ctor or dtor...
+					; (may not contain * because then
+					; "a::operator char*" would become "char*"!)
+			"\\|"
+			"\\([a-zA-Z0-9_:~]*::\\)?operator"
+			"[^a-zA-Z1-9_][^(]*" ; ...or operator
+			" \\)"
+			"[ \t]*([^)]*)[ \t\n]*[^ ;]" ; require something other than a ; after
+			))
+  ;; Figure out this one later
+;;  (setq outline-heading-end-regexp "^{\n")
+
+
+  ;; We want spaces instead of real tabs.
+  (setq indent-tabs-mode nil)
+  ;; other customizations
+  (make-local-variable 'font-lock-defaults)
+  (if (emacs-type-is-regular)
+    (setq font-lock-defaults '(c++-new-font-lock-keywords)))
+
+  ;; Allow c++-files only
+  (make-local-variable 'buffer-include-regexp)
+  (if c++-buffers-only
+      (setq buffer-include-regexp '()))
+  (setq buffer-include-regexp (cons c++-buffer-include-regexp buffer-include-regexp))
+  (setq buffer-include-regexp (cons project-buffer-include-regexp buffer-include-regexp))
+
+  (setq tab-width 4)
+  ;; we like hungry-delete
+  (c-toggle-hungry-state t)
+  ;; uncomment for those who like auto-newline
+;  (c-toggle-auto-state t)
+
+  ;; keybindings for all supported languages.  We can put these in
+  ;; c-mode-base-map because c-mode-map, c++-mode-map, objc-mode-map,
+  ;; java-mode-map, and idl-mode-map inherit from it.
+
+  ;;Newline and indent source for enter.
+  (define-key c-mode-base-map "\C-m" 'newline-and-indent)
+  (local-set-key [RET] 'newline-and-indent)
+;  (local-set-key \C-m 'newline-and-indent)
+;  (local-set-key [RET] 'newline-and-indent)
+  ;; Compile
+  (local-set-key [f5] '(lambda ()
+			 (interactive)
+			 (project-compile "")))
+  (local-set-key [M-f5] '(lambda ()
+			   (interactive)
+			   (project-compile "clean")))
+  (local-set-key [C-M-f5] 'make-makefile)
+;   (local-set-key [C-f] 'hide-entry)
+;   (local-set-key [C-S-f] 'show-entry)
+  ;; Next compiler error
+  (local-set-key [S-f4] 'align)
+  (local-set-key [f8] 'next-error)
+  (outline-minor-mode)
+  (define-key esc-map "\t" 'project-expand-symbol)
+  (global-set-key [M-return] 'project-expand-symbol)
+
+  (make-local-variable 'option-local-config-dir-func)
+  (setq option-local-config-dir-func '(project-local-config-dir))
+  (option-load-from-file-locally)
+)
+
+(add-hook 'c-mode-common-hook 'my-c-mode-common-hook)
+
+(defun my-php-mode-hook()
+  (interactive)
+  ;; offset customizations not in my-c-style
+  (c-set-offset 'member-init-intro '+)
+  ;; Regular expression for the outline mode.
+  ;; Enable outline mode with M-x outline-minor-mode
+  (setq outline-regexp "^[ \t\n\r\f]*function[ \t\n\r\f]+[a-zA-Z_0-9]+([^)]*)")
+;   (setq outline-regexp (concat ;; Does this work in PHP?
+; 			"^"		; beginning of line is required
+; 			"\\(template[ \t]*<[^>]+>[ \t]*\\)?" ; there may be a "template <...>"
+; 			"\\([a-zA-Z0-9_:]+[ \t]+\\)?" ; type specs; there can be no
+; 			"\\([a-zA-Z0-9_:]+[ \t]+\\)?" ; more than 3 tokens, right?
+
+; 			"\\("		; last type spec including */&
+; 			"[a-zA-Z0-9_:]+"
+; 			"\\([ \t]*[*&]+[ \t]*\\|[ \t]+\\)" ; either pointer/ref sign or whitespace
+; 			"\\)?"		; if there is a last type spec
+; 			"\\("		; name; take that into the imenu entry
+; 			"[a-zA-Z0-9_:~]+" ; member function, ctor or dtor...
+; 					; (may not contain * because then
+; 					; "a::operator char*" would become "char*"!)
+; 			"\\|"
+; 			"\\([a-zA-Z0-9_:~]*::\\)?operator"
+; 			"[^a-zA-Z1-9_][^(]*" ; ...or operator
+; 			" \\)"
+; 			"[ \t]*([^)]*)[ \t\n]*[^ ;]" ; require something other than a ; after
+; 			))
+
+
+  ;; We want spaces instead of real tabs.
+  (setq indent-tabs-mode nil)
+  ;; other customizations
+  (make-local-variable 'font-lock-defaults)
+  (if (emacs-type-is-regular)
+      (setq font-lock-defaults '(c++-new-font-lock-keywords)))
+
+  ;; Allow c++-files only
+  (make-local-variable 'buffer-include-regexp)
+  (if c++-buffers-only
+      (setq buffer-include-regexp '()))
+  (setq buffer-include-regexp (cons php-buffer-include-regexp buffer-include-regexp))
+
+  (setq tab-width 4)
+  ;; we like hungry-delete
+  (c-toggle-hungry-state t)
+  ;; uncomment for those who like auto-newline
+;  (c-toggle-auto-state t)
+
+  ;; keybindings for all supported languages.  We can put these in
+  ;; c-mode-base-map because c-mode-map, c++-mode-map, objc-mode-map,
+  ;; java-mode-map, and idl-mode-map inherit from it.
+
+  ;;Newline and indent source for enter.
+  (define-key c-mode-base-map "\C-m" 'newline-and-indent)
+  (local-set-key [RET] 'newline-and-indent)
+;  (local-set-key \C-m 'newline-and-indent)
+;  (local-set-key [RET] 'newline-and-indent)
+  ;; Compile
+;   (local-set-key [f5] '(lambda ()
+; 			 (interactive)
+; 			 (php-preview)))
+;   (local-set-key [C-f] 'hide-entry)
+;   (local-set-key [C-S-f] 'show-entry)
+  ;; Next compiler error
+;   (local-set-key [S-f4] 'align)
+;   (local-set-key [f8] 'next-error)
+  (c-set-style "ezphp")
+)
+
+(add-hook 'php-mode-hook 'my-php-mode-hook)
+
+;;(y-or-n-p "blah")
+
+;; (c-set-style "eZSystems")
+(add-hook 'c++-mode-hook
+	  '(lambda ()
+	     ;;set style for the current buffer
+;;	     (y-or-n-p wanted-c++-style)
+	     (easy-menu-define c-c++-menu c++-mode-map "C++ Project Commands"
+			       (c-project-menu "Project"))
+	     (easy-menu-add (c-project-menu mode-name))
+
+	     (easy-menu-define c-c++-menu c++-mode-map "General options"
+			       (config-menu "Option"))
+	     (easy-menu-add (config-menu mode-name))
+
+	     ;;Set some new keywords for qt's sake.
+	     (setq c-access-key c-qt-C++-access-key)
+	     (c-set-style "ezsystems")
+	     ))
+
+
+;; Turn on spellchecker when editing mail and auto fill mode for some nice and clean mails
+;; (add-hook 'message-mode-hook 'flyspell-mode)
+(add-hook 'message-mode-hook 'turn-on-auto-fill)
+
+(add-hook 'text-mode-hook
+	  '(lambda ()
+	     (easy-menu-define text-menu text-mode-map "C++ Project Commands"
+			       (c-project-menu "Project"))
+	     (easy-menu-add (c-project-menu mode-name))
+
+		     ;;Set some new keywords for qt's sake, doesn't work yet though.
+;		     (setq c-access-key c-qt-C++-access-key)
+
+		     ))
+
+(add-hook 'emacs-lisp-mode-hook
+	  '(lambda ()
+	     (easy-menu-define text-menu emacs-lisp-mode-map "C++ Project Commands"
+			       (c-project-menu "Project"))
+	     (easy-menu-add (c-project-menu mode-name))
+	     ))
+
+(add-hook 'tmake-mode-hook
+	  '(lambda ()
+	     (easy-menu-define text-menu tmake-mode-map "C++ Project Commands"
+			       (c-project-menu "Project"))
+	     (easy-menu-add (c-project-menu mode-name))
+	     ))
+
+(add-hook 'lisp-mode-hook
+	  '(lambda ()
+	     (easy-menu-define text-menu lisp-mode-map "C++ Project Commands"
+			       (c-project-menu "Project"))
+	     (easy-menu-add (c-project-menu mode-name))
+	     ))
+
+
+
+
+
+;;; PerlMode fix for HSCRIPT
+(setq auto-mode-alist
+      (append '(("\\.cmd$"    . perl-mode))
+       auto-mode-alist))
+
+;;; C++mode fix for VFL
+(setq auto-mode-alist
+      (append '(("\\.vfl$"    . c++-mode))
+       auto-mode-alist))
+
+;;; perlmode fix for nk
+(setq auto-mode-alist
+      (append '(("\\.nk$"    . perl-mode))
+       auto-mode-alist))
+
+;;; C++mode fix for VBS
+(setq auto-mode-alist
+      (append '(("\\.vbs$"    . c++-mode))
+       auto-mode-alist))
+
+;;; C++mode fix for .felt
+(setq auto-mode-alist
+      (append '(("\\.felt$"    . c++-mode))
+       auto-mode-alist))
+;;; C++mode fix for .cache
+(setq auto-mode-alist
+      (append '(("\\.cache$"    . c++-mode))
+       auto-mode-alist))
+;;; C++mode fix for .parts
+(setq auto-mode-alist
+      (append '(("\\.parts$"    . c++-mode))
+       auto-mode-alist))
+
+;;; sh-mode fix for .ren
+(setq auto-mode-alist
+      (append '(("\\.ren$"    . sh-mode))
+       auto-mode-alist))
+;;; sh-mode fix for .vdu
+(setq auto-mode-alist
+      (append '(("\\.vdu$"    . sh-mode))
+       auto-mode-alist))
+
+
+
+
+
+
+;;; stupid fix for fonts 
+;; (set-frame-font "9x15")
+;;;(set-frame-font "-efont-fixed-medium-r-normal--14-140-75-75-c-140-iso10646-1")
+
+
+
+(load "~/.myshellsetup/nxml-mode-20041004/rng-auto.el")
+
+
+;; (require 'cua)
+(CUA-mode t)
+

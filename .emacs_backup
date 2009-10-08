@@ -1,0 +1,31 @@
+(global-font-lock-mode 1)
+
+
+
+;;;;; Backspace <--> Delete
+     ; this is not *really* canonical
+     ; but (at least) everybody 
+     ; using a PC expects it.  
+(global-set-key [backspace] 'backward-delete-char)
+(global-set-key '(meta backspace) 'backward-kill-word)
+(global-set-key [DeleteChar] 'delete-char)
+(global-set-key '(meta DeleteChar) 'kill-word)
+
+(defun fix-local-backspace-delete ()
+  "Make DELETE point to the same funktion as C-d
+then make BACKSPACE point to the old value of the DELETE-key"
+  (interactive)
+  (cond ((not (equal (key-binding "\C-d") (key-binding [DeleteChar])))
+  (setq new-delete (key-binding "\C-d"))
+  (setq new-backspace (key-binding [DeleteChar]))
+  (local-set-key [backspace] new-backspace)
+  (local-set-key [DeleteChar] new-delete)
+ )))
+
+(add-hook 'c-mode-hook 'fix-local-backspace-delete)
+(add-hook 'lisp-mode-hook 'fix-local-backspace-delete)
+(add-hook 'text-mode-hook 'fix-local-backspace-delete)
+(add-hook 'emacs-lisp-mode-hook 'fix-local-backspace-delete)
+(add-hook 'tex-mode-hook 'fix-local-backspace-delete)
+(add-hook 'c++-mode-hook 'fix-local-backspace-delete)
+     ; add every mode you like here

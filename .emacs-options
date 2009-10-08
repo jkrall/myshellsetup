@@ -1,0 +1,35 @@
+;; -*- Mode: Emacs-Lisp -*-
+;; -*- lisp -*-
+;---------------------------------------------------------------------
+;; This file is automaticly generated, please do not modify
+;; Version 0.7.7
+(progn
+  (option-smooth-scroll-enable t))
+
+(setq
+ option-package-load-line-highlight 'nil
+ option-package-load-autorevert 'nil
+ option-package-load-completion 'nil
+ option-package-load-speedbar 'nil
+ option-package-load-jde 'nil
+ option-package-load-mwheel 'nil
+ option-package-load-save-history 'nil
+ option-package-load-revive 'nil
+ option-package-load-rect-mark 'nil
+ option-package-load-recentf 't
+ option-package-load-blinking-cursor 'nil
+ option-package-load-blank-mode 'nil
+ option-package-load-CUA 't
+ option-package-load-ibuffer 'nil
+ project-mail-account '"jb@ez.no"
+ mouse-yank-at-point 't
+ inhibit-startup-message 't
+ resize-minibuffer-window-max-height '3
+ resize-minibuffer-mode 't
+ project-delete-redundant 't
+ project-delete-confirm 't
+ project-use-auto-insert 'nil
+ project-ask-load 't
+ c++-auto-include-remove 'nil
+ c++-auto-include-add 'nil)
+

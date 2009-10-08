@@ -1,0 +1,12 @@
+/software/thalia/shape/geom/GEOMgeom.c
+/software/thalia/shape/geom/#GEOMgeom.c#
+/software/thalia/h/shape.p
+/software/thalia/h/#shape.p#
+/muse/krall/Houdini/h/auxConvertShape.h
+/muse/krall/Houdini/h/#auxConvertShape.h#
+/muse/krall/Houdini/SOP/SOP_ShapeFile.C
+/muse/krall/Houdini/SOP/#SOP_ShapeFile.C#
+/muse/krall/Houdini/VRAY/VRAY_fileMtlPrepender.C
+/muse/krall/Houdini/VRAY/#VRAY_fileMtlPrepender.C#
+/home/krall/temp/bad_sphere.ifd
+/home/krall/temp/#bad_sphere.ifd#

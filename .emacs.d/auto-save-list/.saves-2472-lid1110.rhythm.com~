@@ -1,0 +1,14 @@
+/muse/krall/Houdini/SOP/SOP_rhGeoFilter.C
+/muse/krall/Houdini/SOP/#SOP_rhGeoFilter.C#
+/muse/krall/Houdini/h/auxShapeFilter.h
+/muse/krall/Houdini/h/#auxShapeFilter.h#
+/muse/krall/Houdini/VRAY/VRAY_fileMtlPrepender.C
+/muse/krall/Houdini/VRAY/#VRAY_fileMtlPrepender.C#
+/muse/krall/Houdini/Makefile
+/muse/krall/Houdini/#Makefile#
+/muse/krall/Houdini/SOP/SOP_ConnectPoints.C
+/muse/krall/Houdini/SOP/#SOP_ConnectPoints.C#
+/muse/krall/Houdini/SOP/SOP_rhGeoFilter.h
+/muse/krall/Houdini/SOP/#SOP_rhGeoFilter.h#
+/muse/krall/Houdini/SOP/SOP_ConnectPoints.h
+/muse/krall/Houdini/SOP/#SOP_ConnectPoints.h#

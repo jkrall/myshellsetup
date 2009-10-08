@@ -1,0 +1,4 @@
+/etc/xinetd.conf
+/etc/#xinetd.conf#
+/etc/xinetd.d/vnc
+/etc/xinetd.d/#vnc#

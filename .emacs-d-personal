@@ -1,0 +1,8 @@
+;; -*- Mode: Emacs-Lisp -*-
+;; -*- lisp -*-
+;; Personal information
+
+;; Your mail account, used in autoinsert
+(defvar project-mail-account "jb@ez.no")
+(setq user-mail-address "krall@rhythm.com")
+

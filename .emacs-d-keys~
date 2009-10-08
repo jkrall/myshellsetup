@@ -1,0 +1,178 @@
+;; -*- Mode: Emacs-Lisp -*-
+;; -*- lisp -*-
+;; Some keyboard improvements
+
+(global-set-key [home] (lambda () 
+			 (interactive)
+			 (if (and (bolp) key-home-jump)
+			     (beginning-of-buffer)
+			   (beginning-of-line))))
+(global-set-key [end] (lambda ()
+			(interactive)
+			(if (and (eolp) key-home-jump)
+			    (end-of-buffer)
+			  (end-of-line))))
+(global-set-key [(shift f8)] (lambda ()
+			(interactive)
+			(if (project-looking-at-include)
+			    (message "ok")
+			  (message "no"))))
+(global-set-key [(alt f8)] (lambda ()
+			(interactive)
+			(if (project-looking-at-forward-class-decl)
+			    (message "ok")
+			  (message "no"))))
+(global-set-key [(meta f8)] (lambda ()
+			(interactive)
+			(project-convert-include)))
+(global-set-key [delete] 'delete-char)
+(global-set-key [(meta right)] 'forward-word)
+(global-set-key [(meta left)] 'backward-word)
+(global-set-key [(control home)] 'beginning-of-buffer)
+(global-set-key [(control end)] 'end-of-buffer)
+(global-set-key [f2] 'goto-line)
+
+;; Project related keys
+(global-set-key [(meta f2)] 'class-add)
+(global-set-key [(meta f3)] 'class-remove)
+(global-set-key [(meta f4)] 'project-new)
+(global-set-key [f12] 'project-load-files)
+(global-set-key [f9] 'project-execute)
+(global-set-key [(meta f9)] 'project-debug)
+(global-set-key [(alt up)] 'beginning-of-defun)
+(global-set-key [(alt down)] 'end-of-defun)
+(global-set-key [f11] '(lambda ()
+			 (interactive)
+			 (correct-c-header-define (current-buffer))))
+(global-set-key [f10] '(lambda ()
+			 (interactive)
+			 (expand-class-functions (current-buffer))))
+
+(global-set-key [(alt f1)] 'describe-function)
+(global-set-key [(meta f1)] 'describe-key)
+(global-set-key [(control meta f1)] 'describe-variable)
+;; Save
+;;(global-set-key [f2] 'save-buffer)
+(global-set-key [(shift f2)] 'write-file)
+;; Revert
+(global-set-key [f3] 'revert-buffer)
+;; Close
+(global-set-key [(shift f3)] 'kill-this-buffer)
+;; Indent
+(global-set-key [f4] 'indent-region)
+
+;; Term and shell
+(global-set-key [(shift f5)] 'term)
+(global-set-key [(alt f5)] 'shell)
+;; Toggle between two windows
+(global-set-key [f6] 'other-window)
+
+
+(global-set-key [f1] 'switch-to-next-buffer)
+(global-set-key [(alt f7)] 'toggle-source-header)
+
+;; Toggle between two buffers
+(global-set-key [f7] (lambda ()
+			 (interactive)
+			 (switch-to-buffer (other-buffer))))
+;; Fix the buffer when it gets ugly
+(global-set-key "\C-cr" 'font-lock-fontify-buffer)
+
+; ;; Comment region with C-c C-c, or uncomment with C-u C-c C-c
+; (global-set-key [C-cC-c] 'comment-region)
+
+;; Keys for rectangle selection
+(defvar option-keys-rect-mark-alist
+  '(nil
+    (ctl-x-map "r\C-@" rm-set-mark)
+    (ctl-x-map [?r ?\C-\ ] rm-set-mark)
+    (ctl-x-map "r\C-x" rm-exchange-point-and-mark)
+    (ctl-x-map "r\C-w" rm-kill-region)
+    (ctl-x-map "r\M-w" rm-kill-ring-save)
+    (global-map [(shift down-mouse-1)] rm-mouse-drag-region)))
+
+;; Keys for revive
+(defvar option-keys-revive-alist
+  '(nil
+    (ctl-x-map "S" save-current-configuration)
+    (ctl-x-map "F" resume-try)
+    (ctl-x-map "K" wipe-try)))
+
+
+;; Set font menu
+(if (not (eq system-type 'ms-dos))
+    (global-set-key [(shift down-mouse-3)] 'mouse-set-font))
+
+
+; Hippie expand enables completion of filenames/dirs in buffers
+; Control Return makes the completion
+;; Thanks to Klaus Berndl for code
+(require 'hippie-exp)
+(setq hippie-expand-try-functions-list
+      '(
+;;	try-complete-tempo-tag
+	try-expand-dabbrev
+	try-expand-dabbrev-all-buffers
+	try-expand-dabbrev-from-kill
+	try-complete-file-name-partially
+	try-complete-file-name
+	try-expand-list
+        try-complete-lisp-symbol-partially
+        try-complete-lisp-symbol
+        try-expand-whole-kill))
+
+;; the expand-function. Called with a positive prefix <P> it jumpes direct
+;; to the <P>-th try-function.
+(defun my-hippie-expand (arg)
+  (interactive "P")
+  ;; hippie-expand does not have a customization-feature (like
+  ;; dabbrev-expand) to search case-sensitive for completions.
+  ;; So we must set 'case-fold-search' temp. to nil!
+  (let ((old-case-fold-search case-fold-search))
+    (setq case-fold-search nil)
+    (hippie-expand arg)
+    (setq case-fold-search old-case-fold-search)
+    )
+  )
+;; all expansion is done by 'my-hippie-expand bound to C-TAB!
+(global-set-key (quote [(control return)]) (quote my-hippie-expand))
+;;(define-key global-map (read-kbd-macro "C-RET") (quote my-hippie-expand))
+
+(add-hook 'message-setup-hook 'mail-abbrevs-setup)
+
+(define-key minibuffer-local-completion-map "\040" 's-minibuffer-word)
+(define-key minibuffer-local-completion-map "\t" 's-minibuffer-complete)
+(define-key minibuffer-local-must-match-map [return] 's-minibuffer-complete-and-exit)
+(global-set-key "\C-xb" 's-switch-to-buffer)
+
+(defun un-comment-region (beg end &optional arg)
+  (interactive "r\nP")
+  (if arg
+      (comment-region beg end (- arg))
+    (comment-region beg end -1)))
+
+(define-key global-map (read-kbd-macro "A-c") (quote comment-region))
+(define-key global-map (read-kbd-macro "A-u") (quote un-comment-region))
+; (define-key global-map (read-kbd-macro "C-f") (quote hide-entry))
+; (define-key global-map (read-kbd-macro "C-S-f") (quote show-entry))
+(define-key global-map (read-kbd-macro "C-f") (quote project-hide-entry))
+;; (define-key global-map (read-kbd-macro "C-a") (quote hide-body))
+(if (emacs-type-is-regular)
+    (define-key global-map (read-kbd-macro "C-S-a") (quote show-all))
+  (define-key global-map (read-kbd-macro "C-S-?a") (quote show-all)))
+(global-set-key [(shift pause)] 'keyboard-escape-quit)
+; (global-set-key [(control f)] 'hide-entry)
+; (global-set-key [C-S-f] 'show-entry)
+
+;; Change the content of these key maps to make them set the appropriate ispell dictionaries.
+
+(define-key global-map (read-kbd-macro "M-n") '(lambda ()
+						 (interactive)
+						 (ispell-change-dictionary "norsk")))
+(define-key global-map (read-kbd-macro "M-d") '(lambda ()
+						 (interactive)
+						 (ispell-change-dictionary "british")))
+(define-key global-map (read-kbd-macro "M-a") '(lambda ()
+						 (interactive)
+						 (ispell-change-dictionary "american")))
+(define-key global-map (read-kbd-macro "M-p") 'flyspell-buffer)

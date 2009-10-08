@@ -1,0 +1,387 @@
+;; -*- Mode: Emacs-Lisp -*-
+;; -*- lisp -*-
+;; Default emacs variables
+
+;; decides the way the home key works. non-nil means jump to beginning of buffer
+;; if pointer is on the beginning of the line, else jump to the beginning of the line
+;; nil means jump to beginning of line
+;; The same goes for the end key.
+(defvar key-home-jump nil)
+
+(defvar default-color-style nil)
+(defvar used-color-style nil)
+
+;; reg-exp used for finding projects
+(defvar project-regexp "\\.pro$")
+
+;; non-nil means ask for confirmation when deleting redundant class files
+(defvar project-delete-confirm t)
+;; non-nil means delete redundant class files
+(defvar project-delete-redundant t)
+
+;; non-nil means ask before loading projects from disk
+(defvar project-ask-load t)
+
+;; Variables used in classname replacement
+(defvar project-normal-name-match "|||")
+(defvar project-downcase-name-match "!!!")
+(defvar project-upcase-name-match "@@@")
+(defvar project-deriveclass-match "%%%")
+(defvar project-params-match "$$$")
+(defvar project-params-init-match "===")
+
+;; Debugger to be used for debugging
+(defvar project-debugger "kdbg")
+
+;; Use autoinsert for cpp/hpp files or create classes with class-add, non-nil means use autoinsert
+(defvar project-use-auto-insert nil)
+
+;; Default extension for c++ header files.
+(defvar c++-default-header-ext "hpp")
+;; Default extension for c++ source files.
+(defvar c++-default-source-ext "cpp")
+;; Default regexp for c++ header files.
+(defvar c++-header-ext-regexp "\\.\\(hpp\\|h\\|\hh\\|H\\)$")
+;; Default regexp for c++ source files.
+(defvar c++-source-ext-regexp "\\.\\(cpp\\|c\\|\cc\\|C\\)$")
+;; Default regexp for includes
+(defvar project-c++-include-regexp "#include[ \t]+\\(\\(<[^>]*>\\)\\|\\(\"[^\"]*\"\\)\\)[ \t]*\n")
+;; Default regexp for class declarations
+(defvar project-c++-class-decl-regexp "class[ \t]+\\([A-Za-z][A-Za-z0-9_]*\\);[ \t]*\n")
+
+;; Default list of paths to check for include files, add your own to the list
+;; by adding the line (setq project-include-paths (cons "/my/dir" project-include-paths))
+;; somewhere in your .emacs file
+(defvar project-include-paths '( "/usr/include"
+				 "/usr/include/stl"
+				 "/usr/local/include"
+				 "$QTDIR/include" ))
+
+;; If non-nil automaticly insert/remove include files in c++ files
+(defvar c++-auto-include-add t)
+(defvar c++-auto-include-remove nil)
+
+(if (file-exists-p "~/.myshellsetup/.emacs-d-personal")
+    (load-file "~/.myshellsetup/.emacs-d-personal"))
+
+;; new access protection clauses for qt
+(defconst c-qt-access-key "\\<\\(public\\|protected\\|private\\)\\>[ \t]+\\<slots\\>")
+
+(defconst c-qt-C++-access-key (concat "\\("
+				      "\\<\\(public\\|protected\\|private\\|signals\\|slots\\)\\>"
+ 				      "\\)\\|\\("
+;; 				      c-qt-access-key
+ 				      "\\)[ \t]*:"))
+;; Your frame dimensions
+;; I use top as 5 because of the kde taskbar
+(defconst default-frame-top 5)
+(defconst default-frame-left 0)
+
+;; Try these in XEmacs
+(defconst default-frame-width 100)
+(defconst default-frame-height 45)
+
+;; Dimension of new frames
+;; Try these in XEmacs
+(defconst default-new-frame-width 100)
+(defconst default-new-frame-height 45)
+
+;; We don't want to set the font name, change this to a legal font name
+;; to set a new font.
+;; Eg. "-adobe-courier-medium-r-normal--*-120-*-*-m-*-iso8859-1"
+(defvar default-font-name nil)
+; (defvar default-font-name "-adobe-courier-medium-r-normal--*-120-*-*-m-*-iso8859-1")
+
+(setq initial-frame-alist
+      ;; scrollbars, frame width and height
+      (list
+	'(horizontal-scroll-bars . nil)
+	'(vertical-scroll-bars . nil)
+;;	(nconc (list 'top) default-frame-top)
+;;	(nconc (list 'left) default-frame-left)
+	(nconc (list 'width)  default-frame-width)
+	(nconc (list 'height) default-frame-height))
+      )
+
+(setq default-frame-alist
+      ;; scrollbars, frame width and height
+      (list
+	'(horizontal-scroll-bars . nil)
+	'(vertical-scroll-bars . nil)
+	(nconc (list 'width)  default-new-frame-width)
+	(nconc (list 'height) default-new-frame-height))
+      )
+
+;; Which buffers to include, default all.
+(defvar buffer-include-regexp '(".*"))
+
+;; Which buffers to exclude, default *blah* buffers.
+(defvar buffer-exclude-regexp '("\\*[^\\*]+\\*"))
+
+;; Define c++ regexp
+(defvar c++-buffer-include-regexp (concat "[^.]*\\.\\("
+					  (regexp-opt '( "cpp" "cc" "c" "C" "hpp" "hh" "h" "H" ) t)
+					  "\\)"))
+
+;; Define c++ regexp
+(defvar php-buffer-include-regexp (concat "[^.]*\\.\\("
+					  (regexp-opt '( "php" "php3" "php4" ) t)
+					  "\\)"))
+
+;; Define project regexp
+(defvar project-buffer-include-regexp (concat "[^.]*\\.\\("
+					      (regexp-opt '( "pro" ) t)
+					      "\\)"))
+;; non-nil means browse only cpp files
+(defvar c++-buffers-only nil)
+
+;; Wanted c++ style
+(defvar wanted-c++-style "eZSystems")
+
+;; Auto insert customization
+(defvar default-auto-insert-directory "~/.autoinsert/")
+(defvar ezsystems-auto-insert-directory "~/.autoinsert.ez/")
+(defvar project-default-autoinsert-alist '(("\\main.cpp$"	. ["main.cpp" auto-update-header-file])
+					   ("\\main.cc$"	. ["main.cc" auto-update-header-file])
+					   ("\\.cpp$"		. ["cpp" auto-update-header-file])
+					   ("\\.cc$"		. ["cc" auto-update-header-file])
+					   ("\\.hpp$"		. ["hpp" auto-update-header-file])
+					   ("\\.hh$"		. ["hh" auto-update-header-file])
+					   ("\\.h$"		. ["h" auto-update-header-file])
+					   ("\\.php$"		. ["php" auto-update-php-file])
+					   ("\\.pro$"		. ["pro" auto-update-project-file])))
+
+(defvar project-autoinsert-alist '(project-default-autoinsert-alist))
+
+;; CSS mode support
+(if (if (emacs-type-is-regular)
+	(require 'css-mode nil t)
+      (require 'css-mode))
+    (setq auto-mode-alist
+	  (cons '("\\.css\\'" . css-mode) auto-mode-alist)))
+
+;; PHP Template support
+(setq auto-mode-alist
+      (cons '("\\.tpl\\'" . html-mode) auto-mode-alist))
+
+;; Add crontab mode
+(if (if (emacs-type-is-regular)
+	(require 'crontab-mode nil t)
+      (require 'crontab-mode))
+    (setq auto-mode-alist
+	  (cons '("crontab\\'" . crontab-mode) auto-mode-alist)))
+
+
+;; Change this if you want another directory, if it's not found the default is used
+(defvar project-auto-insert-directory default-auto-insert-directory)
+
+(defvar option-smooth-scroll t
+  "Internal: Is true if the smooth scrolling is enabled, never modify this directly, instead use `option-smooth-scroll-enable' or `option-smooth-scroll-toggle'")
+
+(defvar option-save-alist '((option-line-smooth-scroll)
+			    c++-auto-include-add
+			    c++-auto-include-remove
+			    project-ask-load
+			    project-use-auto-insert
+			    project-delete-confirm
+			    project-delete-redundant
+
+			    resize-minibuffer-mode
+			    resize-minibuffer-window-max-height
+			    inhibit-startup-message
+			    mouse-yank-at-point
+			    project-mail-account
+
+			    option-package-load-ibuffer
+			    option-package-load-CUA
+			    option-package-load-blank-mode
+			    option-package-load-blinking-cursor
+			    option-package-load-recentf
+			    option-package-load-rect-mark
+			    option-package-load-revive
+			    option-package-load-save-history
+			    option-package-load-mwheel
+			    option-package-load-jde
+			    option-package-load-speedbar
+			    option-package-load-completion
+			    option-package-load-autorevert
+			    option-package-load-line-highlight
+			    )
+  "A list of options to be saved by `option-save-to-file',
+it consists of a list of ITEMS,
+each ITEM looks like (FUNCTION BODY). If FUNCTION is non-nil the
+BODY is evaluated and stored, if FUNCTION is nil the BODY is
+expected to be variable and it's content is stored.")
+
+(if (emacs-type-is-regular)
+    (append (list 'resize-minibuffer-window-max-height
+		  'resize-minibuffer-mode)
+	    option-save-alist))
+
+(defvar option-config-file "~/.emacs-options"
+  "The global file to save options to.")
+(if (not (emacs-type-is-regular))
+    (setq option-config-file "~/.xemacs-options"))
+(defvar option-local-config-file ".emacs-options"
+  "The local file to save options to, the location of the file is dynamicly calculated.")
+(if (not (emacs-type-is-regular))
+    (setq option-local-config-file ".xemacs-options"))
+(defvar option-local-config-dir-func nil
+  "Points to a function which returns the directory for saving a local config,
+nil means current directory.")
+
+(defvar option-config-dirty nil
+  "Internal: Is non-nil if one or more of the options has been changed but not saved,
+don't set this directly but rather use `option-config-validate' or `option-config-invalidate'.")
+
+(defconst option-config-major-version 0)
+(defconst option-config-minor-version 7)
+(defconst option-config-release 7)
+
+(defun option-config-version ()
+  "The current version of the emacs config."
+  (concat (number-to-string option-config-major-version)
+	  "."
+	  (number-to-string option-config-minor-version)
+	  "."
+	  (number-to-string option-config-release)))
+
+
+(defvar option-save-history-flag nil)
+
+(defvar option-package-ibuffer
+  '(ibuffer
+    option-package-available-ibuffer
+    option-package-load-ibuffer
+    nil
+    nil))
+(defvar option-package-CUA
+  '(CUA-mode
+    option-package-available-CUA
+    option-package-load-CUA
+    (CUA-mode t)
+    (CUA-mode nil)))
+(defvar option-package-blank-mode
+  '(blank-mode
+    option-package-available-blank-mode
+    option-package-load-blank-mode
+    (blank-mode-on)
+    (blank-mode-off)))
+(defvar option-package-blinking-cursor
+  '(blinking-cursor
+    option-package-available-blinking-cursor
+    option-package-load-blinking-cursor
+    (progn
+      (blinking-cursor-mode 1)
+      (if used-color-style
+	  (setq blinking-cursor-colors (caddr used-color-style))))
+    (blinking-cursor-mode -1)))
+(defvar option-package-recentf
+  '(recentf
+    option-package-available-recentf
+    option-package-load-recentf
+    (recentf-mode 1)
+    (recentf-mode -1)))
+(defvar option-package-rect-mark
+  '(rect-mark
+    option-package-available-rect-mark
+    option-package-load-rect-mark
+    (option-package-start-rect-mark)
+    (option-package-end-rect-mark)))
+(defvar option-package-revive
+  '(revive
+    option-package-available-revive
+    option-package-load-revive
+    (option-package-start-revive)
+    (option-package-end-revive)))
+(defvar option-package-save-history
+  '(save-history
+    option-package-available-save-history
+    option-package-load-save-history
+    (option-save-history-enable t)
+    (option-save-history-enable nil)))
+(defvar option-package-mwheel
+  '(mwheel
+    option-package-available-mwheel
+    option-package-load-mwheel
+    nil
+    nil))
+(defvar option-package-jde
+  '(jde
+    option-package-available-jde
+    option-package-load-jde
+    nil
+    nil))
+(defvar option-package-speedbar
+  '(speedbar
+    option-package-available-speedbar
+    option-package-load-speedbar
+    (speedbar 1)
+    (speedbar -1)))
+(defvar option-package-completion
+  '(completion
+    option-package-available-completion
+    option-package-load-completion
+    (initialize-completions)
+    nil))
+(defvar option-package-autorevert
+  '(autorevert
+    option-package-available-autorevert
+    option-package-load-autorevert
+    (global-auto-revert-mode 1)
+    (global-auto-revert-mode -1)))
+(defvar option-package-line-highlight
+  '(highlight-current-line
+    option-package-available-line-highlight
+    option-package-load-line-highlight
+    (progn
+      (highlight-current-line-on t)
+      (if used-color-style
+	  (highlight-current-line-set-bg-color (cadr used-color-style))))
+    (highlight-current-line-on nil)))
+
+(defvar option-package-load-ibuffer nil)
+(defvar option-package-load-CUA nil)
+(defvar option-package-load-blank-mode nil)
+(defvar option-package-load-blinking-cursor nil)
+(defvar option-package-load-recentf nil)
+(defvar option-package-load-rect-mark nil)
+(defvar option-package-load-revive nil)
+(defvar option-package-load-save-history nil)
+(defvar option-package-load-mwheel nil)
+(defvar option-package-load-jde nil)
+(defvar option-package-load-speedbar nil)
+(defvar option-package-load-completion nil)
+(defvar option-package-load-autorevert nil)
+(defvar option-package-load-line-highlight nil)
+
+(defvar option-package-available-ibuffer nil)
+(defvar option-package-available-CUA nil)
+(defvar option-package-available-blank-mode nil)
+(defvar option-package-available-blinking-cursor nil)
+(defvar option-package-available-recentf nil)
+(defvar option-package-available-rect-mark nil)
+(defvar option-package-available-revive nil)
+(defvar option-package-available-save-history t)
+(defvar option-package-available-mwheel nil)
+(defvar option-package-available-jde nil)
+(defvar option-package-available-speedbar nil)
+(defvar option-package-available-completion nil)
+(defvar option-package-available-autorevert nil)
+(defvar option-package-available-line-highlight nil)
+
+(defvar option-package-available-alist
+  '(option-package-ibuffer
+    option-package-CUA
+    option-package-blank-mode
+    option-package-blinking-cursor
+    option-package-recentf
+    option-package-rect-mark
+    option-package-revive
+    option-package-save-history
+    option-package-mwheel
+    option-package-jde
+    option-package-speedbar
+    option-package-completion
+    option-package-autorevert
+    option-package-line-highlight))

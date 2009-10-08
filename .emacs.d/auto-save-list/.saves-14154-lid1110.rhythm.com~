@@ -1,0 +1,16 @@
+/muse/krall/cloudtank/h/renderPov.h
+/muse/krall/cloudtank/h/#renderPov.h#
+/muse/krall/cloudtank/src/IFD_CloudTankPassThru.C
+/muse/krall/cloudtank/src/#IFD_CloudTankPassThru.C#
+/proj/redsun/share/houdini/scripts/rh_cloudtanklighttool/rh_cloudtanklighttool_postinc.cmd
+/proj/redsun/share/houdini/scripts/rh_cloudtanklighttool/#rh_cloudtanklighttool_postinc.cmd#
+/muse/krall/cloudtank/src/dsmLightTextured.C
+/muse/krall/cloudtank/src/#dsmLightTextured.C#
+/muse/krall/cloudtank/h/dsmLightTextured.h
+/muse/krall/cloudtank/h/#dsmLightTextured.h#
+/muse/krall/cloudtank/src/dsmLight.C
+/muse/krall/cloudtank/src/#dsmLight.C#
+/muse/krall/cloudtank/h/dsmLight.h
+/muse/krall/cloudtank/h/#dsmLight.h#
+/muse/krall/cloudtank/Makefile
+/muse/krall/cloudtank/#Makefile#
